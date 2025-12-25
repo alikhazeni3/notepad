@@ -59,13 +59,11 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                 .setTitle("Options")
                 .setItems(options, (dialog, which) -> {
                     switch (which) {
-                        case 0: // Delete
+                        case 0:
                             int pos = list.indexOf(note);
                             if (pos >= 0) {
-                                // delete from DB in background
                                 new Thread(() -> {
                                     NoteDatabase.getInstance(ctx).noteDao().delete(note);
-                                    // update UI on main thread
                                     new Handler(Looper.getMainLooper()).post(() -> {
                                         list.remove(pos);
                                         notifyItemRemoved(pos);
@@ -74,13 +72,13 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                                 }).start();
                             }
                             break;
-                        case 1: // Share
+                        case 1:
                             Intent shareIntent = new Intent(Intent.ACTION_SEND);
                             shareIntent.setType("text/plain");
                             shareIntent.putExtra(Intent.EXTRA_TEXT, (note.title == null ? "" : note.title + "\n") + (note.text == null ? "" : note.text));
                             ctx.startActivity(Intent.createChooser(shareIntent, "Share Note"));
                             break;
-                        case 2: // Copy
+                        case 2:
                             ClipboardManager cm = (ClipboardManager) ctx.getSystemService(Context.CLIPBOARD_SERVICE);
                             if (cm != null) {
                                 ClipData clip = ClipData.newPlainText("note", note.text == null ? "" : note.text);
